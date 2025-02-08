@@ -11,6 +11,18 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+ 
+import CardContent from '@mui/material/CardContent'
+ 
+import TextField from '@mui/material/TextField'
+ 
+import Checkbox from '@mui/material/Checkbox'
+ 
+import FormControlLabel from '@mui/material/FormControlLabel'
+ 
+import MenuItem from '@mui/material/MenuItem'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
 
 
  
@@ -151,9 +163,6 @@ const Table = () => {
      setOpen(false);
    };
 
-   const handelEdit = (id)=>{
-    alert(id)
-   }
 
 
    const handeldeletet = (id)=>{
@@ -215,6 +224,51 @@ const Table = () => {
     setOpen(true);
    }
 
+
+  //   update form 
+
+
+  //  handel modal
+  const [openform, setOpenform] = React.useState(false);
+  const handleCloseform = () => {
+    setOpenform(false);
+  };
+
+  const handelEdit =async (id)=>{
+    setOpenform(true);
+   const response = await axios.get(`http://localhost:8000/ticket-show/${id}`)
+   // console.log(response.data);
+   setShowData(response.data);
+  console.log(showData);
+  }
+
+
+   // State Management
+   const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    priority: '',
+    category: showData.category,
+    ticketType: '',
+    date: '',
+    contactEmail: showData.email,
+    phone: '',
+    agreeTerms: false,
+    attachment: null
+  })
+
+  const handleChange = (e) => {
+    const { name, value, type, checked, files } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : type === 'file' ? files[0] : value
+    }))
+  }
+
+  const handleSubmit  = ()=>
+  {
+    
+  }
  
 
 
@@ -349,6 +403,93 @@ const Table = () => {
 </React.Fragment>
 
 {/*  end model for view */}
+
+
+
+{/* start update  modal */}
+<React.Fragment>
+{/* <Button variant="outlined" >
+  Open alert dialog
+</Button> */}
+<Dialog
+  open={openform}
+  onClose={handleCloseform}
+  aria-labelledby="alert-dialog-title"
+  aria-describedby="alert-dialog-description"
+>
+  <DialogTitle id="alert-dialog-title">
+    {showData.title}
+  </DialogTitle>
+  {/* <DialogContent>
+    <DialogContentText id="alert-dialog-description">
+    {showData.description}
+    </DialogContentText>
+  </DialogContent> */}
+  <DialogContent dividers>
+  <DialogTitle>
+    <Typography variant="h5" fontWeight="bold" color="primary">
+      {showData.title}
+    </Typography>
+  </DialogTitle>
+
+ 
+
+  <Card className='flex flex-col sm:w-[450px] shadow-lg'>
+        <CardContent className='p-6 sm:p-12'>
+          
+          <Typography variant='h4' className='text-center mb-4'>Ticket Submission Form 🚀</Typography>
+
+          <form noValidate autoComplete='off' onSubmit={handleSubmit} className='flex flex-col gap-5'>
+            <TextField name='title' label='Title' fullWidth required defaultValue={showData.title} onChange={handleChange} />
+            <TextField name='description' label='Description' fullWidth multiline rows={3} required defaultValue={showData.description} onChange={handleChange} />
+            
+            <TextField select name='priority' label='Priority' fullWidth required defaultValue={showData.priority} onChange={handleChange}>
+              <MenuItem value='low'>Low</MenuItem>
+              <MenuItem value='medium'>Medium</MenuItem>
+              <MenuItem value='high'>High</MenuItem>
+            </TextField>
+
+            <TextField select name='category' label='Category' fullWidth required defaultValue={showData.category} onChange={handleChange}>
+              <MenuItem value='bug'>Bug Report</MenuItem>
+              <MenuItem value='feature'>Feature Request</MenuItem>
+              <MenuItem value='support'>General Support</MenuItem>
+            </TextField>
+
+            <Typography>Ticket Type:</Typography>
+            <RadioGroup row name='ticketType' value={showData.ticketType} onChange={handleChange}>
+              <FormControlLabel value='bug' control={<Radio />} label='Bugs' />
+              <FormControlLabel value='feature' control={<Radio />} label='Feature Request' />
+              <FormControlLabel value='support' control={<Radio />} label='Support' />
+            </RadioGroup>
+
+            <TextField type='date' name='date' fullWidth required defaultValue={showData.date} onChange={handleChange} />
+
+            <Button variant='outlined' component='label'>
+              Upload Attachment
+              <input type='file' hidden name='attachment' onChange={handleChange} />
+            </Button>
+
+            <TextField type='email' name='contactEmail'   fullWidth required value={showData.contactEmail} onChange={handleChange} />
+            <TextField type='tel' name='phone' label='Phone Number' fullWidth required defaultValue={showData.phone} onChange={handleChange} />
+            
+            <FormControlLabel control={<Checkbox name='agreeTerms' checked={showData.agreeTerms} onChange={handleChange} />} label='I agree to the Privacy Policy & Terms' />
+
+            <Button type='submit' variant='contained' fullWidth>Submit Ticket</Button>
+
+      
+          </form>
+        </CardContent>
+      </Card>
+ 
+</DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseform}>Exit</Button>
+    
+  </DialogActions>
+</Dialog>
+</React.Fragment>
+
+{/*  end model for update*/}
 
     </Card>
 
