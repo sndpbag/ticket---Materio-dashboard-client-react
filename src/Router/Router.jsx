@@ -11,6 +11,7 @@ import Layout from "../app/(dashboard)/Layout";
 import PrivateRouter from "./PrivateRouter";
 import Register from "../views/Register";
 import Tickets from "../components/PersonalComponent/Tickets";
+import Video from "../CustomComponent/Video";
 
 
   const router = createBrowserRouter([
@@ -34,7 +35,7 @@ import Tickets from "../components/PersonalComponent/Tickets";
         },
         {
           path: 'video-class',
-          element: <PrivateRouter><h2>video class</h2></PrivateRouter>
+          element: <PrivateRouter><Video></Video></PrivateRouter>
         }
       ]
     }
