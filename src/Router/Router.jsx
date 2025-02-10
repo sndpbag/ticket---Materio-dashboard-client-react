@@ -31,6 +31,10 @@ import Tickets from "../components/PersonalComponent/Tickets";
         },{
           path: 'ticket-submission',
           element: <PrivateRouter><Register></Register></PrivateRouter>
+        },
+        {
+          path: 'video-class',
+          element: <PrivateRouter><h2>video class</h2></PrivateRouter>
         }
       ]
     }

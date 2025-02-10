@@ -137,6 +137,8 @@ const Table = () => {
    const {user} = useContext(AuthContext);
    const [rowData, setRowData] = useState([]);
    const [showData,setShowData] = useState([]);
+   const [editData,setEditData] = useState([]);
+   
 
    const fetchTickets = async () => {
     if (!user?.email) return; // Prevent API call if user is not logged in
@@ -221,6 +223,7 @@ const Table = () => {
     const response = await axios.get(`http://localhost:8000/ticket-show/${id}`)
     // console.log(response.data);
     setShowData(response.data);
+  
     setOpen(true);
    }
 
@@ -237,9 +240,9 @@ const Table = () => {
   const handelEdit =async (id)=>{
     setOpenform(true);
    const response = await axios.get(`http://localhost:8000/ticket-show/${id}`)
-   // console.log(response.data);
-   setShowData(response.data);
-  console.log(showData);
+
+   setEditData(response.data,id);
+ 
   }
 
 
@@ -248,14 +251,16 @@ const Table = () => {
     title: '',
     description: '',
     priority: '',
-    category: showData.category,
+    category: '',
     ticketType: '',
     date: '',
-    contactEmail: showData.email,
+    contactEmail: '',
     phone: '',
-    agreeTerms: false,
-    attachment: null
+    agreeTerms: '',
+    attachment: ''
   })
+
+ 
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target
@@ -265,10 +270,48 @@ const Table = () => {
     }))
   }
 
-  const handleSubmit  = ()=>
-  {
-    
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevents the default form submission behavior (reload)
+    // Create FormData object for file upload
+    const id = e.target.id.value;
+    const title = e.target.title.value;
+    const description = e.target.description.value;
+    const priority = e.target.priority.value;
+    const category = e.target.category.value;
+    const ticketType = e.target.ticketType.value;
+    const contactEmail = e.target.contactEmail.value;
+    const phone = e.target.phone.value;
+    const agreeTerms = e.target.agreeTerms.value;
+    const attachment = e.target.attachment.value;
+    const date = e.target.date.value;
+     
+   
+    console.log()
+
+    const data = {id,title,description,priority,category,ticketType,contactEmail,phone,agreeTerms,attachment,date};
+ 
+    axios.put(`http://localhost:8000/ticket-update`,data)
+    .then(response=>{
+
+      if(response.status === 200)
+      {
+        setOpenform(false);
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: response.data.message,
+          showConfirmButton: false,
+          timer: 1500
+        })
+
+
+      }
+       
+    })
+
+
+  };
+  
  
 
 
@@ -440,39 +483,40 @@ const Table = () => {
           <Typography variant='h4' className='text-center mb-4'>Ticket Submission Form 🚀</Typography>
 
           <form noValidate autoComplete='off' onSubmit={handleSubmit} className='flex flex-col gap-5'>
-            <TextField name='title' label='Title' fullWidth required defaultValue={showData.title} onChange={handleChange} />
-            <TextField name='description' label='Description' fullWidth multiline rows={3} required defaultValue={showData.description} onChange={handleChange} />
+            <TextField type='hidden' name='id'  value={editData.id} onChange={handleChange} />
+            <TextField name='title' label='Title' fullWidth required defaultValue={editData.title} onChange={handleChange} />
+            <TextField name='description' label='Description' fullWidth multiline rows={3} required defaultValue={editData.description} onChange={handleChange} />
             
-            <TextField select name='priority' label='Priority' fullWidth required defaultValue={showData.priority} onChange={handleChange}>
+            <TextField select name='priority' label='Priority' fullWidth required defaultValue={editData.priority} onChange={handleChange}>
               <MenuItem value='low'>Low</MenuItem>
               <MenuItem value='medium'>Medium</MenuItem>
               <MenuItem value='high'>High</MenuItem>
             </TextField>
 
-            <TextField select name='category' label='Category' fullWidth required defaultValue={showData.category} onChange={handleChange}>
+            <TextField select name='category' label='Category' fullWidth required defaultValue={editData.category} onChange={handleChange}>
               <MenuItem value='bug'>Bug Report</MenuItem>
               <MenuItem value='feature'>Feature Request</MenuItem>
               <MenuItem value='support'>General Support</MenuItem>
             </TextField>
 
             <Typography>Ticket Type:</Typography>
-            <RadioGroup row name='ticketType' value={showData.ticketType} onChange={handleChange}>
+            <RadioGroup row name='ticketType' defaultValue={editData.ticketType} onChange={handleChange}>
               <FormControlLabel value='bug' control={<Radio />} label='Bugs' />
               <FormControlLabel value='feature' control={<Radio />} label='Feature Request' />
               <FormControlLabel value='support' control={<Radio />} label='Support' />
             </RadioGroup>
 
-            <TextField type='date' name='date' fullWidth required defaultValue={showData.date} onChange={handleChange} />
+            <TextField type='date' name='date' fullWidth required defaultValue={editData.date} onChange={handleChange} />
 
             <Button variant='outlined' component='label'>
               Upload Attachment
               <input type='file' hidden name='attachment' onChange={handleChange} />
             </Button>
 
-            <TextField type='email' name='contactEmail'   fullWidth required value={showData.contactEmail} onChange={handleChange} />
-            <TextField type='tel' name='phone' label='Phone Number' fullWidth required defaultValue={showData.phone} onChange={handleChange} />
+            <TextField type='email' name='contactEmail'   fullWidth required value={editData.contactEmail} onChange={handleChange} />
+            <TextField type='tel' name='phone' label='Phone Number' fullWidth required defaultValue={editData.phone} onChange={handleChange} />
             
-            <FormControlLabel control={<Checkbox name='agreeTerms' checked={showData.agreeTerms} onChange={handleChange} />} label='I agree to the Privacy Policy & Terms' />
+            <FormControlLabel control={<Checkbox name='agreeTerms' checked={editData.agreeTerms} onChange={handleChange} />} label='I agree to the Privacy Policy & Terms' />
 
             <Button type='submit' variant='contained' fullWidth>Submit Ticket</Button>
 
