@@ -12,6 +12,7 @@ import PrivateRouter from "./PrivateRouter";
 import Register from "../views/Register";
 import Tickets from "../components/PersonalComponent/Tickets";
 import Video from "../CustomComponent/Video";
+import Payment from "../CustomComponent/Payment";
 
 
   const router = createBrowserRouter([
@@ -36,6 +37,10 @@ import Video from "../CustomComponent/Video";
         {
           path: 'video-class',
           element: <PrivateRouter><Video></Video></PrivateRouter>
+        },
+        {
+          path: 'payment',
+          element: <PrivateRouter><Payment></Payment></PrivateRouter>
         }
       ]
     }
