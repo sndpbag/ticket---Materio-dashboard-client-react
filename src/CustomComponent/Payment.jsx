@@ -31,6 +31,7 @@ const Payment = () => {
                 errors.email && ( <p className="text-red-500">Email Field is Required!</p>)
               }
               <TextField {...register("transaction_no")} label='Transaction No' fullWidth   />
+              <TextField {...register("fee")} label='fee' fullWidth   />
             
   
              
