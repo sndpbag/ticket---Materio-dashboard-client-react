@@ -13,6 +13,7 @@ import Register from "../views/Register";
 import Tickets from "../components/PersonalComponent/Tickets";
 import Video from "../CustomComponent/Video";
 import Payment from "../CustomComponent/Payment";
+import Post from "../CustomComponent/Post";
 
 
   const router = createBrowserRouter([
@@ -41,6 +42,10 @@ import Payment from "../CustomComponent/Payment";
         {
           path: 'payment',
           element: <PrivateRouter><Payment></Payment></PrivateRouter>
+        },
+        {
+          path: 'post',
+          element: <PrivateRouter><Post></Post></PrivateRouter>
         }
       ]
     }

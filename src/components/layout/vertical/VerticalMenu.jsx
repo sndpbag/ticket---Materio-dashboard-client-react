@@ -133,14 +133,16 @@ const VerticalMenu = ({ scrollMenu }) => {
           </MenuItem>
           </Link>
 
+          <Link to={`${import.meta.env.VITE_NEXT_PUBLIC_APP_URL}/dashboard/post`}>
           <MenuItem
-            href={`${import.meta.env.VITE_NEXT_PUBLIC_PRO_URL}/apps/chat`}
+             
             icon={<i className='ri-wechat-line' />}
             suffix={<Chip label='Pro' size='small' color='primary' variant='tonal' />}
             target='_blank'
           >
-            Chat
+            Post
           </MenuItem>
+          </Link>
 
           <MenuItem
             href={`${import.meta.env.VITE_NEXT_PUBLIC_PRO_URL}/apps/chat`}
