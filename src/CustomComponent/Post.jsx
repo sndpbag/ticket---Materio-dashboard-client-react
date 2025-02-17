@@ -1,6 +1,9 @@
 
 
+ 
+import axios from "axios";
 import { useRef, useState, useEffect } from "react";
+import Swal from "sweetalert2";
 
 const Post = () => {
   const editorRef = useRef(null);
@@ -9,6 +12,15 @@ const Post = () => {
   const [dragging, setDragging] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [wordCount, setWordCount] = useState(0);
+  const [title,setTitle] = useState("");
+  const [shortDescription,SetshortDescription] = useState("");
+  const [category,setCotegory] = useState(6);
+  const [tag,setTag] = useState("");
+  const [thambnail,setThambnail] = useState("");
+  const [slug,setSlug] = useState("");
+  const [error,setError] = useState([]);
+
+
 
   // Execute formatting commands
   const execCommand = (command, value = null) => {
@@ -109,10 +121,43 @@ const Post = () => {
   };
 
   // Handle Publish
-  const handlePublish = () => {
+  const handlePublish =async () => {
     const content = editorRef.current.innerHTML;
-    console.log(content);
+
+  try {
+    const post_data = {shortDescription,title,content,category,tag,slug};
+
+    const post = await axios.post('http://127.0.0.1:8000/api/post/create',post_data);
+  
+    if(post.status === 200)
+    {
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: post.data.message,
+        showConfirmButton: false,
+        timer: 1500
+      })
+    }
+  
+    
+  } catch (error) {
+    console.error("Error:", error.response?.data || error.message);
+    setError(error.response?.data);
+  }
   };
+
+    // Remove error message after 1 second
+    useEffect(() => {
+      if (Object.keys(error).length > 0) {
+        const timer = setTimeout(() => {
+          setError({});
+        }, 1000);
+    
+        return () => clearTimeout(timer); // Cleanup to prevent memory leaks
+      }
+    }, [error]);
+ 
 
   // Add image to the editor
   const addImageToEditor = (src) => {
@@ -148,6 +193,22 @@ const Post = () => {
   }, []);
 
   return (
+
+<>
+
+ 
+    <input type="text" placeholder={error?.content ? error.content[0] : 'Enter Title'} onChange={e=>setTitle(e.target.value)} className="px-3 py-2 border rounded-md w-full mb-3"  />
+    {
+      error?.content && <p className="text-red-500 text-sm">{error.content[0]}</p>
+    }
+    <input type="text" placeholder="Enter Short Description" onChange={e=>SetshortDescription(e.target.value)} className="px-3 py-2 border rounded-md w-full mb-3"  />
+    <select name="" onChange={(e) =>setCotegory(e.target.value)} className="px-3 py-2 border rounded-md w-full mb-3" id="">
+      <option value="6">Laravel</option>
+      <option value="4">javascript bangla</option>
+      <option value="3">Html</option>
+    </select>
+    <input type="text" placeholder="Enter Tag by coma" onChange={e=>setTag(e.target.value)} className="px-3 py-2 border rounded-md w-full mb-3"  />
+    <input type="text" placeholder="Enter Slug" onChange={e=>setSlug(e.target.value)} className="px-3 py-2 border rounded-md w-full mb-3"  />
     <div className="w-full mx-auto p-4 bg-white border rounded-lg shadow-md">
       {/* Toolbar */}
       <div className="flex flex-wrap space-x-2 space-y-2 mb-4 p-2 bg-gray-100 rounded-lg shadow-sm">
@@ -166,7 +227,7 @@ const Post = () => {
         <button className="px-3 py-1 bg-gray-300 rounded-md" onClick={() => execCommand("superscript")}>Sup</button>
         <button className="px-3 py-1 bg-gray-300 rounded-md" onClick={() => execCommand("subscript")}>Sup</button>
         <button className="px-3 py-1 bg-gray-300 rounded-md" onClick={() => execCommand("strikeThrough")}><del>Del</del></button>
-        <input type="color" className="h-8 w-10 rounded-md border-none" onChange={(e) => execCommand("backColor", e.target.value)} />
+        <input type="color" className="h-8 w-10 rounded-md border-none" onChange={(e) => execCommand("foreColor", e.target.value)} />
         <button className="px-3 py-1 bg-gray-300 rounded-md" onClick={insertHorizontalLine}>Insert HR</button>
         <button className="px-3 py-1 bg-gray-300 rounded-md" onClick={addCodeBlock}>Code Block</button>
         <button className="px-3 py-1 bg-gray-300 rounded-md" onClick={insertDateTime}>Insert Date & Time</button>
@@ -207,6 +268,7 @@ const Post = () => {
       {/* Save Draft Button */}
       <button onClick={saveDraft} className="mt-4 ml-3 px-6 py-2 bg-yellow-500 text-white rounded-md">Save Draft</button>
     </div>
+    </>
   );
 };
 
